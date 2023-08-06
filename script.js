@@ -32,7 +32,12 @@ window.onload = function() {
     // Load the JSON files containing the URL mappings
     const promises = [
       fetch("url.json").then(response => response.json()),
-      fetch("short-terms.json").then(response => response.json())
+      fetch("short-terms.json")
+        .then(response => response.json())
+        .catch(error => {
+          console.error("Error fetching short-terms.json:", error);
+          return {}; // Return an empty object to handle errors
+        })
     ];
 
     Promise.all(promises)
@@ -69,7 +74,7 @@ window.onload = function() {
         }
       })
       .catch(error => {
-        console.error("Error fetching url.json or short-terms.json:", error);
+        console.error("Error fetching url.json:", error);
         alert("An error occurred while fetching the URL mappings.");
       });
   }
