@@ -9,7 +9,7 @@ function handleSearch(event) {
   }
 }
 
-window.onload = function() {
+window.onload = function () {
   // Get the query parameter from the URL
   const queryParams = new URLSearchParams(window.location.search);
   const requestedUrl = queryParams.get("q");
@@ -37,11 +37,22 @@ window.onload = function() {
         .catch(error => {
           console.error("Error fetching short-terms.json:", error);
           return {}; // Return an empty object to handle errors
-        })
+        }),
     ];
 
     Promise.all(promises)
       .then(([urlMappings, shortTerms]) => {
+        // Check if the requested URL is provided directly as a query parameter (e.g., ?q=https://example.com)
+        const requestedUrlWithRefer = getProcessedUrl(requestedUrl, urlMappings, shortTerms);
+
+        if (requestedUrlWithRefer) {
+          // Redirect the user to the final URL from the query parameter with the referral parameter
+          const separator = requestedUrlWithRefer.includes("?") ? "&" : "?";
+          const finalUrl = `${requestedUrlWithRefer}${separator}refer=sintco-url-refer`;
+          window.location.href = finalUrl;
+          return;
+        }
+
         const targetUrl = getProcessedUrl(requestedUrl, urlMappings, shortTerms);
 
         if (targetUrl) {
