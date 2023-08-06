@@ -45,7 +45,7 @@ window.onload = function () {
 
                 // Append the referral parameter to the target URL
                 const referralParam = "refer";
-                const referralValue = "sintco-url-refer";
+                const referralValue = "https://github.com/SintcoLTD/url";
                 const finalUrl = `${targetUrl}${separator}${referralParam}=${referralValue}`;
 
                 // Redirect the user to the final URL from url.json
