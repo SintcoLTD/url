@@ -90,6 +90,14 @@ window.onload = function () {
     });
   }
 
+  // If there's a valid query parameter for GitHub profile, perform redirection
+  const ghQueryParam = queryParams.get("gh");
+  if (ghQueryParam) {
+    // Redirect to the GitHub profile URL
+    const githubProfileUrl = `https://github.com/${ghQueryParam}`;
+    window.location.href = githubProfileUrl;
+  }
+
   // Listen for input events in the search bar
   searchInput.addEventListener("input", () => {
     const inputText = searchInput.value.trim();
