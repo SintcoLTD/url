@@ -29,65 +29,65 @@ window.onload = function () {
 
   // If there's a valid query parameter, perform redirection
   if (requestedUrl) {
-    // Load the JSON files containing the URL mappings
-    const promises = [
-      fetch("url.json").then(response => response.json()),
-      fetch("short-terms.json")
-        .then(response => response.json())
-        .catch(error => {
-          console.error("Error fetching short-terms.json:", error);
-          return {}; // Return an empty object to handle errors
-        }),
-    ];
+    // Process the input text and replace variable phrases
+    processInputText(requestedUrl).then(processedText => {
+      if (processedText) {
+        // Check if the processed text is a valid URL
+        if (isValidUrl(processedText)) {
+          // Check if the processed text is a short URL in url.json
+          fetch("url.json")
+            .then(response => response.json())
+            .then(urlMappings => {
+              const targetUrl = urlMappings[processedText];
+              if (targetUrl) {
+                // Check if the target URL already contains query parameters
+                const separator = targetUrl.includes("?") ? "&" : "?";
 
-    Promise.all(promises)
-      .then(([urlMappings, shortTerms]) => {
-        // Process the input text and replace variable phrases
-        const processedText = getProcessedUrl(requestedUrl, urlMappings, shortTerms);
+                // Append the referral parameter to the target URL
+                const referralParam = "refer";
+                const referralValue = "sintco-url-refer";
+                const finalUrl = `${targetUrl}${separator}${referralParam}=${referralValue}`;
 
-        if (processedText) {
-          // Check if the processed text is a valid URL
-          if (isValidUrl(processedText)) {
-            // Check if the processed text is a short URL in url.json
-            const targetUrl = urlMappings[processedText];
-            if (targetUrl) {
-              // Check if the target URL already contains query parameters
-              const separator = targetUrl.includes("?") ? "&" : "?";
-
-              // Append the referral parameter to the target URL
-              const referralParam = "refer";
-              const referralValue = "sintco-url-refer";
-              const finalUrl = `${targetUrl}${separator}${referralParam}=${referralValue}`;
-
-              // Redirect the user to the final URL from url.json
-              window.location.href = finalUrl;
-            } else {
-              // Redirect the user to the processed URL with the referral parameter
-              const separator = processedText.includes("?") ? "&" : "?";
-              const finalUrl = `${processedText}${separator}refer=sintco-url-refer`;
-              window.location.href = finalUrl;
-            }
-          } else {
-            // If the processed text is not a valid URL, display the name of the URL and redirect directly
-            const urlName = getUrlName(processedText, urlMappings);
-            if (urlName) {
-              const redirectElement = document.createElement("div");
-              redirectElement.classList.add("redirect");
-              redirectElement.innerText = `Redirecting to: ${urlName}`;
-              suggestionsDiv.appendChild(redirectElement);
-            }
-            window.location.href = processedText;
-          }
+                // Redirect the user to the final URL from url.json
+                window.location.href = finalUrl;
+              } else {
+                // Redirect the user to the processed URL with the referral parameter
+                const separator = processedText.includes("?") ? "&" : "?";
+                const finalUrl = `${processedText}${separator}refer=sintco-url-refer`;
+                window.location.href = finalUrl;
+              }
+            })
+            .catch(error => {
+              console.error("Error fetching url.json:", error);
+              alert("An error occurred while fetching the URL mappings.");
+              window.location.href = "index.html";
+            });
         } else {
-          // If the query parameter is not a valid URL or short URL, redirect to the index page
-          alert("Invalid URL!");
-          window.location.href = "index.html";
+          // If the processed text is not a valid URL, display the name of the URL and redirect directly
+          fetch("url.json")
+            .then(response => response.json())
+            .then(urlMappings => {
+              const urlName = getUrlName(processedText, urlMappings);
+              if (urlName) {
+                const redirectElement = document.createElement("div");
+                redirectElement.classList.add("redirect");
+                redirectElement.innerText = `Redirecting to: ${urlName}`;
+                suggestionsDiv.appendChild(redirectElement);
+              }
+              window.location.href = processedText;
+            })
+            .catch(error => {
+              console.error("Error fetching url.json:", error);
+              alert("An error occurred while fetching the URL mappings.");
+              window.location.href = "index.html";
+            });
         }
-      })
-      .catch(error => {
-        console.error("Error fetching url.json:", error);
-        alert("An error occurred while fetching the URL mappings.");
-      });
+      } else {
+        // If the query parameter is not a valid URL or short URL, redirect to the index page
+        alert("Invalid URL!");
+        window.location.href = "index.html";
+      }
+    });
   }
 
   // Listen for input events in the search bar
