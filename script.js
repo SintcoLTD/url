@@ -4,7 +4,7 @@ function handleSearch(event) {
   const searchInput = document.getElementById("searchInput").value;
   if (searchInput.trim() !== "") {
     processInputText(searchInput.trim()).then(processedText => {
-      window.location.href = `index.html?q=${processedText}`;
+      window.location.href = `index.html?url=${processedText}`;
     });
   }
 }
@@ -12,7 +12,7 @@ function handleSearch(event) {
 window.onload = function () {
   // Get the query parameter from the URL
   const queryParams = new URLSearchParams(window.location.search);
-  const requestedUrl = queryParams.get("q");
+  const requestedUrl = queryParams.get("url");
 
   const searchInput = document.getElementById("searchInput");
   const suggestionsDiv = document.getElementById("suggestions");
@@ -42,44 +42,44 @@ window.onload = function () {
 
     Promise.all(promises)
       .then(([urlMappings, shortTerms]) => {
-        // Check if the requested URL is provided directly as a query parameter (e.g., ?q=https://example.com)
-        const requestedUrlWithRefer = getProcessedUrl(requestedUrl, urlMappings, shortTerms);
+        // Process the input text and replace variable phrases
+        const processedText = getProcessedUrl(requestedUrl, urlMappings, shortTerms);
 
-        if (requestedUrlWithRefer) {
-          // Redirect the user to the final URL from the query parameter with the referral parameter
-          const separator = requestedUrlWithRefer.includes("?") ? "&" : "?";
-          const finalUrl = `${requestedUrlWithRefer}${separator}refer=sintco-url-refer`;
-          window.location.href = finalUrl;
-          return;
-        }
+        if (processedText) {
+          // Check if the processed text is a valid URL
+          if (isValidUrl(processedText)) {
+            // Check if the processed text is a short URL in url.json
+            const targetUrl = urlMappings[processedText];
+            if (targetUrl) {
+              // Check if the target URL already contains query parameters
+              const separator = targetUrl.includes("?") ? "&" : "?";
 
-        const targetUrl = getProcessedUrl(requestedUrl, urlMappings, shortTerms);
+              // Append the referral parameter to the target URL
+              const referralParam = "refer";
+              const referralValue = "sintco-url-refer";
+              const finalUrl = `${targetUrl}${separator}${referralParam}=${referralValue}`;
 
-        if (targetUrl) {
-          // Check if the target URL already contains query parameters
-          const separator = targetUrl.includes("?") ? "&" : "?";
-
-          // Append the referral parameter to the target URL
-          const referralParam = "refer";
-          const referralValue = "sintco-url-refer";
-          const finalUrl = `${targetUrl}${separator}${referralParam}=${referralValue}`;
-
-          // Redirect the user to the final URL from url.json
-          window.location.href = finalUrl;
-        } else if (isValidUrl(requestedUrl)) {
-          // If the requested short URL is not found in the JSON, but it's a valid URL, display the name of the URL
-          const urlName = getUrlName(requestedUrl, urlMappings);
-          if (urlName) {
-            const redirectElement = document.createElement("div");
-            redirectElement.classList.add("redirect");
-            redirectElement.innerText = `Redirecting to: ${urlName}`;
-            suggestionsDiv.appendChild(redirectElement);
+              // Redirect the user to the final URL from url.json
+              window.location.href = finalUrl;
+            } else {
+              // Redirect the user to the processed URL with the referral parameter
+              const separator = processedText.includes("?") ? "&" : "?";
+              const finalUrl = `${processedText}${separator}refer=sintco-url-refer`;
+              window.location.href = finalUrl;
+            }
           } else {
-            // If the URL name is not found, redirect directly
-            window.location.href = requestedUrl;
+            // If the processed text is not a valid URL, display the name of the URL and redirect directly
+            const urlName = getUrlName(processedText, urlMappings);
+            if (urlName) {
+              const redirectElement = document.createElement("div");
+              redirectElement.classList.add("redirect");
+              redirectElement.innerText = `Redirecting to: ${urlName}`;
+              suggestionsDiv.appendChild(redirectElement);
+            }
+            window.location.href = processedText;
           }
         } else {
-          // If the query parameter is neither a valid short URL nor a valid URL, redirect to the index page
+          // If the query parameter is not a valid URL or short URL, redirect to the index page
           alert("Invalid URL!");
           window.location.href = "index.html";
         }
@@ -190,19 +190,13 @@ async function processInputText(inputText) {
 
 // Function to get the processed URL
 async function getProcessedUrl(requestedUrl, urlMappings, shortTerms) {
-  // Check if the requested URL is a short URL in url.json
-  const targetUrl = urlMappings[requestedUrl];
-  if (targetUrl) {
-    return targetUrl;
-  }
-
   // Process the input text and replace variable phrases
   const processedText = await processInputText(requestedUrl);
 
   // Check if the processed text is a short URL in url.json
-  const processedTargetUrl = urlMappings[processedText];
-  if (processedTargetUrl) {
-    return processedTargetUrl;
+  const targetUrl = urlMappings[processedText];
+  if (targetUrl) {
+    return targetUrl;
   }
 
   // Check if the processed text is a valid URL after replacing variable phrases
