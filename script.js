@@ -152,4 +152,12 @@ function getUrlName(targetUrl, urlMappings) {
 
 // Function to redirect directly to the entered URL
 function redirectToEnteredUrl(enteredUrl) {
-  // Check if the entered URL starts with "www
+  // Check if the entered URL starts with "www."
+  if (enteredUrl.startsWith("www.")) {
+    // Prepend "http://" to the entered URL and redirect
+    window.location.href = `http://${enteredUrl}`;
+  } else {
+    // Prepend "http://" to the entered URL and redirect
+    window.location.href = `http://${enteredUrl}`;
+  }
+}
