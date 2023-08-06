@@ -91,10 +91,10 @@ window.onload = function () {
   }
 
   // If there's a valid query parameter for GitHub profile, perform redirection
-  const ghProfileQueryParam = queryParams.get("gh-profile");
-  if (ghProfileQueryParam) {
+  const ghQueryParam = queryParams.get("gh");
+  if (ghQueryParam) {
     // Redirect to the GitHub profile URL with refer
-    const githubProfileUrl = `https://github.com/${ghProfileQueryParam}?refer=sintco-url-refer`;
+    const githubProfileUrl = `https://github.com/${ghQueryParam}?refer=sintco-url-refer`;
     window.location.href = githubProfileUrl;
   }
 
