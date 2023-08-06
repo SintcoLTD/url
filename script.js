@@ -3,8 +3,10 @@ function handleSearch(event) {
   event.preventDefault();
   const searchInput = document.getElementById("searchInput").value;
   if (searchInput.trim() !== "") {
-    const queryString = encodeURIComponent(processInputText(searchInput.trim()));
-    window.location.href = `index.html?q=${queryString}`;
+    processInputText(searchInput.trim()).then(processedText => {
+      const queryString = encodeURIComponent(processedText);
+      window.location.href = `index.html?q=${queryString}`;
+    });
   }
 }
 
@@ -29,7 +31,10 @@ window.onload = function() {
   // If there's a valid query parameter, perform redirection
   if (requestedUrl) {
     // Load the JSON files containing the URL mappings
-    const promises = [fetch("url.json").then(response => response.json()), fetch("short-terms.json").then(response => response.json())];
+    const promises = [
+      fetch("url.json").then(response => response.json()),
+      fetch("short-terms.json").then(response => response.json())
+    ];
 
     Promise.all(promises)
       .then(([urlMappings, shortTerms]) => {
@@ -154,6 +159,12 @@ function processInputText(inputText) {
       for (const [key, value] of Object.entries(shortTerms)) {
         inputText = inputText.replace(new RegExp(key, "gi"), value);
       }
+
+      // If the processed input is not a valid URL and doesn't include http:// or https://, add http:// as default
+      if (!isValidUrl(inputText) && !inputText.startsWith("http://") && !inputText.startsWith("https://")) {
+        inputText = "http://" + inputText;
+      }
+      
       return inputText;
     })
     .catch(error => {
@@ -171,17 +182,18 @@ function getProcessedUrl(requestedUrl, urlMappings, shortTerms) {
   }
 
   // Process the input text and replace variable phrases
-  const processedText = processInputText(requestedUrl);
-  // Check if the processed text is a short URL in url.json
-  const processedTargetUrl = urlMappings[processedText];
-  if (processedTargetUrl) {
-    return processedTargetUrl;
-  }
+  return processInputText(requestedUrl).then(processedText => {
+    // Check if the processed text is a short URL in url.json
+    const processedTargetUrl = urlMappings[processedText];
+    if (processedTargetUrl) {
+      return processedTargetUrl;
+    }
 
-  // Check if the processed text is a valid URL after replacing variable phrases
-  if (isValidUrl(processedText)) {
-    return processedText;
-  }
+    // Check if the processed text is a valid URL after replacing variable phrases
+    if (isValidUrl(processedText)) {
+      return processedText;
+    }
 
-  return null;
+    return null;
+  });
 }
