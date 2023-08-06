@@ -4,8 +4,7 @@ function handleSearch(event) {
   const searchInput = document.getElementById("searchInput").value;
   if (searchInput.trim() !== "") {
     processInputText(searchInput.trim()).then(processedText => {
-      const queryString = encodeURIComponent(processedText);
-      window.location.href = `index.html?q=${queryString}`;
+      window.location.href = `index.html?q=${processedText}`;
     });
   }
 }
