@@ -3,7 +3,7 @@ function handleSearch(event) {
   event.preventDefault();
   const searchInput = document.getElementById("searchInput").value;
   if (searchInput.trim() !== "") {
-    const queryString = encodeURIComponent(searchInput.trim());
+    const queryString = encodeURIComponent(processInputText(searchInput.trim()));
     window.location.href = `index.html?q=${queryString}`;
   }
 }
@@ -28,11 +28,12 @@ window.onload = function() {
 
   // If there's a valid query parameter, perform redirection
   if (requestedUrl) {
-    // Load the JSON file containing the URL mappings
-    fetch("url.json")
-      .then(response => response.json())
-      .then(urlMappings => {
-        const targetUrl = urlMappings[requestedUrl];
+    // Load the JSON files containing the URL mappings
+    const promises = [fetch("url.json").then(response => response.json()), fetch("short-terms.json").then(response => response.json())];
+
+    Promise.all(promises)
+      .then(([urlMappings, shortTerms]) => {
+        const targetUrl = getProcessedUrl(requestedUrl, urlMappings, shortTerms);
 
         if (targetUrl) {
           // Check if the target URL already contains query parameters
@@ -55,7 +56,7 @@ window.onload = function() {
             suggestionsDiv.appendChild(redirectElement);
           } else {
             // If the URL name is not found, redirect directly
-            redirectToEnteredUrl(requestedUrl);
+            window.location.href = requestedUrl;
           }
         } else {
           // If the query parameter is neither a valid short URL nor a valid URL, redirect to the index page
@@ -64,7 +65,7 @@ window.onload = function() {
         }
       })
       .catch(error => {
-        console.error("Error fetching url.json:", error);
+        console.error("Error fetching url.json or short-terms.json:", error);
         alert("An error occurred while fetching the URL mappings.");
       });
   }
@@ -72,10 +73,10 @@ window.onload = function() {
   // Listen for input events in the search bar
   searchInput.addEventListener("input", () => {
     const inputText = searchInput.value.trim();
-    getMatchingSuggestions(inputText).then(suggestions => {
-      // Display suggestions
-      displaySuggestions(suggestions);
-    });
+    const suggestions = getMatchingSuggestions(inputText);
+
+    // Display suggestions
+    displaySuggestions(suggestions);
   });
 
   // Handle tab key press to accept suggestion
@@ -89,35 +90,28 @@ window.onload = function() {
       }
     }
   });
-
-  // Handle Enter key press to redirect directly
-  searchInput.addEventListener("keydown", event => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      redirectToEnteredUrl(searchInput.value.trim());
-    }
-  });
 };
 
 // Function to get matching suggestions from url.json
 function getMatchingSuggestions(inputText) {
+  const suggestions = [];
+
   // Load the JSON file containing the URL mappings
-  return fetch("url.json")
+  fetch("url.json")
     .then(response => response.json())
     .then(urlMappings => {
-      const suggestions = [];
       const keys = Object.keys(urlMappings);
       for (const key of keys) {
         if (key.startsWith(inputText)) {
           suggestions.push(key);
         }
       }
-      return suggestions;
     })
     .catch(error => {
       console.error("Error fetching url.json:", error);
-      return [];
     });
+
+  return suggestions;
 }
 
 // Function to display suggestions
@@ -150,14 +144,44 @@ function getUrlName(targetUrl, urlMappings) {
   return null;
 }
 
-// Function to redirect directly to the entered URL
-function redirectToEnteredUrl(enteredUrl) {
-  // Check if the entered URL starts with "www."
-  if (enteredUrl.startsWith("www.")) {
-    // Prepend "http://" to the entered URL and redirect
-    window.location.href = `http://${enteredUrl}`;
-  } else {
-    // Prepend "http://" to the entered URL and redirect
-    window.location.href = `http://${enteredUrl}`;
+// Function to process the input text and replace variable phrases
+function processInputText(inputText) {
+  // Load the short-terms.json file containing the variable phrases mappings
+  return fetch("short-terms.json")
+    .then(response => response.json())
+    .then(shortTerms => {
+      // Replace each variable phrase with its corresponding value
+      for (const [key, value] of Object.entries(shortTerms)) {
+        inputText = inputText.replace(new RegExp(key, "gi"), value);
+      }
+      return inputText;
+    })
+    .catch(error => {
+      console.error("Error fetching short-terms.json:", error);
+      return inputText;
+    });
+}
+
+// Function to get the processed URL
+function getProcessedUrl(requestedUrl, urlMappings, shortTerms) {
+  // Check if the requested URL is a short URL in url.json
+  const targetUrl = urlMappings[requestedUrl];
+  if (targetUrl) {
+    return targetUrl;
   }
+
+  // Process the input text and replace variable phrases
+  const processedText = processInputText(requestedUrl);
+  // Check if the processed text is a short URL in url.json
+  const processedTargetUrl = urlMappings[processedText];
+  if (processedTargetUrl) {
+    return processedTargetUrl;
+  }
+
+  // Check if the processed text is a valid URL after replacing variable phrases
+  if (isValidUrl(processedText)) {
+    return processedText;
+  }
+
+  return null;
 }
