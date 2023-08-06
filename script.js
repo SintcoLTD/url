@@ -150,31 +150,31 @@ function getUrlName(targetUrl, urlMappings) {
 }
 
 // Function to process the input text and replace variable phrases
-function processInputText(inputText) {
+async function processInputText(inputText) {
   // Load the short-terms.json file containing the variable phrases mappings
-  return fetch("short-terms.json")
-    .then(response => response.json())
-    .then(shortTerms => {
-      // Replace each variable phrase with its corresponding value
-      for (const [key, value] of Object.entries(shortTerms)) {
-        inputText = inputText.replace(new RegExp(key, "gi"), value);
-      }
+  try {
+    const response = await fetch("short-terms.json");
+    const shortTerms = await response.json();
 
-      // If the processed input is not a valid URL and doesn't include http:// or https://, add http:// as default
-      if (!isValidUrl(inputText) && !inputText.startsWith("http://") && !inputText.startsWith("https://")) {
-        inputText = "http://" + inputText;
-      }
-      
-      return inputText;
-    })
-    .catch(error => {
-      console.error("Error fetching short-terms.json:", error);
-      return inputText;
-    });
+    // Replace each variable phrase with its corresponding value
+    for (const [key, value] of Object.entries(shortTerms)) {
+      inputText = inputText.replace(new RegExp(key, "gi"), value);
+    }
+
+    // If the processed input is not a valid URL and doesn't include http:// or https://, add http:// as default
+    if (!isValidUrl(inputText) && !inputText.startsWith("http://") && !inputText.startsWith("https://")) {
+      inputText = "http://" + inputText;
+    }
+
+    return inputText;
+  } catch (error) {
+    console.error("Error fetching short-terms.json:", error);
+    return inputText;
+  }
 }
 
 // Function to get the processed URL
-function getProcessedUrl(requestedUrl, urlMappings, shortTerms) {
+async function getProcessedUrl(requestedUrl, urlMappings, shortTerms) {
   // Check if the requested URL is a short URL in url.json
   const targetUrl = urlMappings[requestedUrl];
   if (targetUrl) {
@@ -182,18 +182,18 @@ function getProcessedUrl(requestedUrl, urlMappings, shortTerms) {
   }
 
   // Process the input text and replace variable phrases
-  return processInputText(requestedUrl).then(processedText => {
-    // Check if the processed text is a short URL in url.json
-    const processedTargetUrl = urlMappings[processedText];
-    if (processedTargetUrl) {
-      return processedTargetUrl;
-    }
+  const processedText = await processInputText(requestedUrl);
 
-    // Check if the processed text is a valid URL after replacing variable phrases
-    if (isValidUrl(processedText)) {
-      return processedText;
-    }
+  // Check if the processed text is a short URL in url.json
+  const processedTargetUrl = urlMappings[processedText];
+  if (processedTargetUrl) {
+    return processedTargetUrl;
+  }
 
-    return null;
-  });
+  // Check if the processed text is a valid URL after replacing variable phrases
+  if (isValidUrl(processedText)) {
+    return processedText;
+  }
+
+  return null;
 }
