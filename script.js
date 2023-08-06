@@ -55,7 +55,7 @@ window.onload = function() {
             suggestionsDiv.appendChild(redirectElement);
           } else {
             // If the URL name is not found, redirect directly
-            window.location.href = requestedUrl;
+            redirectToEnteredUrl(requestedUrl);
           }
         } else {
           // If the query parameter is neither a valid short URL nor a valid URL, redirect to the index page
@@ -72,10 +72,10 @@ window.onload = function() {
   // Listen for input events in the search bar
   searchInput.addEventListener("input", () => {
     const inputText = searchInput.value.trim();
-    const suggestions = getMatchingSuggestions(inputText);
-
-    // Display suggestions
-    displaySuggestions(suggestions);
+    getMatchingSuggestions(inputText).then(suggestions => {
+      // Display suggestions
+      displaySuggestions(suggestions);
+    });
   });
 
   // Handle tab key press to accept suggestion
@@ -89,28 +89,35 @@ window.onload = function() {
       }
     }
   });
+
+  // Handle Enter key press to redirect directly
+  searchInput.addEventListener("keydown", event => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      redirectToEnteredUrl(searchInput.value.trim());
+    }
+  });
 };
 
 // Function to get matching suggestions from url.json
 function getMatchingSuggestions(inputText) {
-  const suggestions = [];
-
   // Load the JSON file containing the URL mappings
-  fetch("url.json")
+  return fetch("url.json")
     .then(response => response.json())
     .then(urlMappings => {
+      const suggestions = [];
       const keys = Object.keys(urlMappings);
       for (const key of keys) {
         if (key.startsWith(inputText)) {
           suggestions.push(key);
         }
       }
+      return suggestions;
     })
     .catch(error => {
       console.error("Error fetching url.json:", error);
+      return [];
     });
-
-  return suggestions;
 }
 
 // Function to display suggestions
@@ -142,3 +149,7 @@ function getUrlName(targetUrl, urlMappings) {
   }
   return null;
 }
+
+// Function to redirect directly to the entered URL
+function redirectToEnteredUrl(enteredUrl) {
+  // Check if the entered URL starts with "www
