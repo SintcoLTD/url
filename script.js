@@ -46,14 +46,14 @@ window.onload = function () {
                 // Append the referral parameter to the target URL
                 const referralParam = "refer";
                 const referralValue = "https://github.com/SintcoLTD/url";
-                const finalUrl = `${targetUrl}${separator}${referralParam}=${referralValue}`;
+                const finalUrl = `${targetUrl}${separator}?${referralParam}=${referralValue}`;
 
                 // Redirect the user to the final URL from url.json
                 window.location.href = finalUrl;
               } else {
                 // Redirect the user to the processed URL with the referral parameter
                 const separator = processedText.includes("?") ? "&" : "?";
-                const finalUrl = `${processedText}${separator}${referralParam}=${referralValue}`;
+                const finalUrl = `${processedText}${separator}?${referralParam}=${referralValue}`;
                 window.location.href = finalUrl;
               }
             })
