@@ -53,7 +53,7 @@ window.onload = function () {
               } else {
                 // Redirect the user to the processed URL with the referral parameter
                 const separator = processedText.includes("?") ? "&" : "?";
-                const finalUrl = `${processedText}${separator}refer=sintco-url-refer`;
+                const finalUrl = `${processedText}${separator}${referralParam}=${referralValue}`;
                 window.location.href = finalUrl;
               }
             })
@@ -94,7 +94,7 @@ window.onload = function () {
   const ghQueryParam = queryParams.get("gh");
   if (ghQueryParam) {
     // Redirect to the GitHub profile URL with refer
-    const githubProfileUrl = `https://github.com/${ghQueryParam}?refer=sintco-url-refer`;
+    const githubProfileUrl = `https://github.com/${ghQueryParam}?refer=https://github.com/SintcoLTD/url`;
     window.location.href = githubProfileUrl;
   }
 
