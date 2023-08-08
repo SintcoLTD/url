@@ -1,7 +1,7 @@
 const countdownElement = document.getElementById("countdown");
 const visitNowBtn = document.getElementById("visitNowBtn");
 
-// Set the countdown time in seconds
+// Set the initial countdown time in seconds
 let countdownTime = 5;
 
 // Function to update the countdown and check for redirection
