@@ -1,6 +1,6 @@
-# URL Redirector Web Application
+# Sintco URL Web Application
 
-The URL Redirector Web Application is a simple tool that enables users to create redirects for URLs. This application is designed to accept a URL through a query parameter and redirect the user to the provided URL after a short delay, with an optional referral parameter.
+The Sintco URL Web Application is a simple tool that allows users to create redirects for URLs. This application is designed to accept a URL through a query parameter and redirect the user to the provided URL after a short delay, with an optional referral parameter.
 
 ## Features
 
