@@ -1,51 +1,64 @@
-# Sintco URL
+# URL Redirector Web Application
 
-The URL redirecting Web Program is a simple web application that allows users to redirect URLs with refer and create shortcuts for frequently used URLs. It is based on HTML, JavaScript, and JSON for data storage.
+The URL Redirector Web Application is a simple tool that enables users to create redirects for URLs. This application is designed to accept a URL through a query parameter and redirect the user to the provided URL after a short delay, with an optional referral parameter.
 
 ## Features
 
-1. URL Redirection: When a user visits a shortened URL, the program will redirect them to the original URL associated with the short link.
+### Redirecting URLs with Referral Parameter
 
-2. Custom Shortcuts: Users can create custom shortcuts for frequently used URLs. Shortcuts are stored in the `short-terms.json` file, allowing for quick access to specific URLs.
+The primary purpose of the application is to redirect users to URLs provided through the `?url=` query parameter. The redirected URL will also include a referral parameter (`refer`) that indicates the source of the redirection. This is helpful for tracking referral sources.
 
-3. Referral Parameter: The program adds a `refer` parameter to the redirected URLs, allowing tracking of referrals.
+### Delayed Redirection
 
-4. URL Suggestions: The search feature in the web application provides temporary suggestions based on previously shortened URLs in the `url.json` file.
-
-5. GitHub Profile Shortcut: Users can use the `?gh=` query parameter to quickly redirect to GitHub profiles. For example, `?gh=najmajmal` redirects to `https://github.com/najmajmal`.
+After the user submits a URL, the application will wait for a short delay before redirecting them to the specified URL. The default delay is 2 seconds. This provides a brief moment for users to understand the redirection and the referral source.
 
 ## How to Use
 
-1. Access the Web Application: Open `index.html` in your web browser. The application will load, and you will see a search bar.
+1. **Access the Application**: Open `index.html` in your web browser. You'll see a simple form with an input field for entering a URL.
 
-2. Shorten a URL: Enter a long URL into the search bar and press Enter. The application will create a shortened version of the URL. If the URL is not already in the `url.json` file, the application will redirect with the referral parameter. If the URL is already in `url.json`, the application will prioritize the saved URL and redirect with the referral parameter.
+2. **Enter a URL**: In the input field, type the URL you want to redirect to. Ensure that the URL includes the protocol (`http://` or `https://`).
 
-3. Create Custom Shortcuts: To create a custom shortcut, use the `?url=` query parameter followed by the shortcut name and the URL you want to associate with it. For example, `?url=gh-najmajmal` creates a shortcut `gh-najmajmal` for `https://github.com/najmajmal`.
+3. **Submit**: Click the "Redirect" button to submit the URL.
 
-4. Redirect to GitHub Profile: Use the `?gh=` query parameter to redirect to GitHub profiles. For example, `?gh=najmajmal` redirects to `https://github.com/najmajmal`.
+4. **Redirection**: After submitting, the application will wait for a brief delay (2 seconds) and then redirect you to the specified URL. You'll notice the `refer` parameter added to the URL indicating the source of the redirection.
 
-5. Temporary Suggestions: When typing in the search bar, the application will provide temporary suggestions based on previous URLs in the `url.json` file. Pressing the Tab key will accept the suggestion and complete the input.
+## Example Usage
 
-## Data Storage
+Let's say you want to redirect users to `https://example.com` with a referral to your GitHub repository.
 
-- `url.json`: This JSON file stores the mappings between shortened URLs and their corresponding original URLs.
+1. Open `index.html` in your browser.
 
-- `short-terms.json`: This JSON file stores the mappings between custom shortcuts and the URLs they point to.
+2. Enter the following URL in the input field:
+   ```
+   https://example.com
+   ```
+
+3. Click "Redirect."
+
+4. After the delay, you'll be redirected to:
+   ```
+   https://example.com?refer=https://github.com/SintcoLTD/url
+   ```
+
+## Customization
+
+If you need to adjust the delay or change the referral source, you can modify the JavaScript code in `script.js`.
 
 ## Note
 
-- The web application assumes that URLs are either HTTP or HTTPS and automatically adds `http://` as a default for URLs that do not include a protocol.
+- The application assumes that the provided URL includes the protocol (`http://` or `https://`). If not, the redirection might not work as expected.
 
-- If the entered URL is invalid or lacks a proper HTTP/HTTPS prefix, the application will display an error message.
-
-- The referral parameter `refer` is added to all redirected URLs.
+- The referral parameter is added for tracking purposes and can be modified in the JavaScript code if needed.
 
 ## Contributing
 
-Contributions to this project are welcome! If you have any suggestions, bug fixes, or feature enhancements, please feel free to create a pull request.
+Contributions to this project are welcome! Feel free to fork the repository, make improvements, and create pull requests.
 
 ## License
 
-This web program is licensed under the [MIT License](LICENSE). Feel free to use, modify, and distribute it according to the terms of the license.
+This web application is open-source and licensed under the [MIT License](LICENSE).
 
 ---
+
+_This README provides an overview of the application's features and usage. Modify it to match your project's specific details._
+```
