@@ -1,13 +1,31 @@
-// Get the query parameter from the URL
-const queryParams = new URLSearchParams(window.location.search);
-const githubUsername = queryParams.get("q");
+const countdownElement = document.getElementById("countdown");
+const visitNowBtn = document.getElementById("visitNowBtn");
 
-if (githubUsername) {
-  // Delay the redirect by 5 seconds
-  setTimeout(() => {
-    const githubProfileUrl = `https://github.com/${githubUsername}?refer=sintco-url-refer`;
-    window.location.href = githubProfileUrl;
-  }, 5000); // 5000 milliseconds = 5 seconds
-} else {
-  console.error("GitHub username not provided in query parameter.");
+// Set the countdown time in seconds
+let countdownTime = 5;
+
+// Start the countdown
+function startCountdown() {
+  countdownElement.textContent = countdownTime;
+  const countdownInterval = setInterval(() => {
+    countdownTime--;
+    countdownElement.textContent = countdownTime;
+    if (countdownTime <= 0) {
+      clearInterval(countdownInterval);
+      redirectToGitHub();
+    }
+  }, 1000); // 1000 milliseconds = 1 second
 }
+
+// Redirect to GitHub with referral
+function redirectToGitHub() {
+  const referralValue = "https://github.com/SintcoLTD/url";
+  const githubProfileUrl = `https://github.com/${ghQueryParam}?refer=${encodeURIComponent(referralValue)}`;
+  window.location.href = githubProfileUrl;
+}
+
+// Listen for "Visit Now" button click
+visitNowBtn.addEventListener("click", redirectToGitHub);
+
+// Start the countdown on page load
+startCountdown();
