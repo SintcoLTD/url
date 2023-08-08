@@ -4,17 +4,15 @@ const visitNowBtn = document.getElementById("visitNowBtn");
 // Set the countdown time in seconds
 let countdownTime = 5;
 
-// Start the countdown
-function startCountdown() {
+// Function to update the countdown and check for redirection
+function updateCountdown() {
   countdownElement.textContent = countdownTime;
-  const countdownInterval = setInterval(() => {
+  if (countdownTime <= 0) {
+    redirectToGitHub();
+  } else {
     countdownTime--;
-    countdownElement.textContent = countdownTime;
-    if (countdownTime <= 0) {
-      clearInterval(countdownInterval);
-      redirectToGitHub();
-    }
-  }, 1000); // 1000 milliseconds = 1 second
+    setTimeout(updateCountdown, 1000); // Update every 1 second
+  }
 }
 
 // Redirect to GitHub with referral
@@ -34,4 +32,4 @@ function redirectToGitHub() {
 visitNowBtn.addEventListener("click", redirectToGitHub);
 
 // Start the countdown on page load
-startCountdown();
+updateCountdown();
