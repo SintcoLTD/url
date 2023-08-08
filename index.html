@@ -1,16 +1,15 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Sintco URL</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sintco URL Redirector</title>
+    <script src="script.js"></script>
 </head>
 <body>
-  <h1>Sintco URL</h1>
-  <form onsubmit="handleSearch(event)">
-    <input type="text" id="searchInput" placeholder="Enter URL">
-    <button type="submit">Go</button>
-  </form>
-  <div id="suggestions"></div>
-  <script src="script.js"></script>
+    <form id="searchForm">
+        <input type="text" id="searchInput" placeholder="Enter URL">
+        <button type="submit">Redirect</button>
+    </form>
 </body>
 </html>
