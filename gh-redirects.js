@@ -1,6 +1,6 @@
 // Get the query parameter from the URL
 const queryParams = new URLSearchParams(window.location.search);
-const githubUsername = queryParams.get("username");
+const githubUsername = queryParams.get("q");
 
 if (githubUsername) {
   // Delay the redirect by 5 seconds
