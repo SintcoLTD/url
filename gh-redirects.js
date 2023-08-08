@@ -19,9 +19,15 @@ function startCountdown() {
 
 // Redirect to GitHub with referral
 function redirectToGitHub() {
-  const referralValue = "https://github.com/SintcoLTD/url";
-  const githubProfileUrl = `https://github.com/${ghQueryParam}?refer=${encodeURIComponent(referralValue)}`;
-  window.location.href = githubProfileUrl;
+  const queryParams = new URLSearchParams(window.location.search);
+  const ghQueryParam = queryParams.get("gh");
+  if (ghQueryParam) {
+    const referralValue = "https://github.com/SintcoLTD/url";
+    const githubProfileUrl = `https://github.com/${ghQueryParam}?refer=${encodeURIComponent(referralValue)}`;
+    window.location.href = githubProfileUrl;
+  } else {
+    console.error("GitHub username not provided in query parameter.");
+  }
 }
 
 // Listen for "Visit Now" button click
