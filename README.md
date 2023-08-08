@@ -59,6 +59,3 @@ Contributions to this project are welcome! Feel free to fork the repository, mak
 This web application is open-source and licensed under the [MIT License](LICENSE).
 
 ---
-
-_This README provides an overview of the application's features and usage. Modify it to match your project's specific details._
-```
