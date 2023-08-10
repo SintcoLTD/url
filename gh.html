@@ -1,17 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sintco URL Redirect</title>
+    <title>Sintco URL Redirection Page</title>
     <link rel="stylesheet" href="styles.css">
     <script src="gh-redirects.js"></script>
 </head>
 <body>
-    <div class="content-boxes">
-        <div class="content-box"></div>
-        <div class="content-box"></div>
-        <div class="content-box"></div>
+    <div class="wrapper">
+        <header class="title">
+            <h1>Sintco URL Redirection Page</h1>
+        </header>
+        <div class="content">
+            <div class="left-sidebar">Left Sidebar</div>
+            <div class="main-content">
+                <div class="timer-container">
+                    <div id="timer">5</div>
+                </div>
+                <br />
+                <div class="content-box">Content Box 1</div>
+                <div class="content-box">Content Box 2</div>
+                <div class="content-box">Content Box 3</div>
+            </div>
+            <div class="right-sidebar">Right Sidebar</div>
+        </div>
     </div>
+
+    <script>
+        // Get the timer element
+        const timerElement = document.getElementById("timer");
+        
+        // Set the initial countdown value
+        let countdown = 5;
+        
+        // Function to update the timer display
+        function updateTimer() {
+          timerElement.textContent = countdown; // Update the timer display
+          countdown--; // Decrease the countdown value
+          if (countdown < 0) {
+            clearInterval(timerInterval); // Stop the interval when countdown reaches -1
+            timerElement.textContent = "Redirecting!";
+          }
+        }
+        
+        // Call the updateTimer function every second (1000 milliseconds)
+        const timerInterval = setInterval(updateTimer, 1000);
+    </script>
 </body>
 </html>
